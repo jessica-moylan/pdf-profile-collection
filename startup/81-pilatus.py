@@ -35,6 +35,8 @@ class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
                                f"['Mono', 'RGB1', 'Bayer']")
 
         cam_dtype = self.data_type.get(as_string=True)
+        # print(f'\n{cam_dtype = }\n')
+
         type_map = {
             "UInt8": "|u1",
             "UInt16": "<u2",
@@ -42,11 +44,14 @@ class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
             "Float32": "<f4",
             "Float64": "<f8",
         }
+        # print(f'\n{ret = }\n')
+
         if cam_dtype in type_map:
             ret[key].setdefault("dtype_str", type_map[cam_dtype])
-            ret[key].setdefault("dtype_numpy", type_map[cam_dtype])
+            # ret[key].setdefault("dtype_numpy", type_map[cam_dtype])
+            ret[key]["dtype_numpy"] = type_map[cam_dtype]
 
-        print(f'\n{ret = }\n')
+        # print(f'\n{ret = }\n')
         
         return ret
     
@@ -216,6 +221,8 @@ def set_Pilatus_parameters(num_images=1, exposure_time=0.1):
     print ('setting exposure time for a single image to '+str(exposure_time))
     pilatus1.set_exposure_time(exposure_time)
     tqdm_sleep(1)
+
+
 
 
 file_loading_timer.stop()

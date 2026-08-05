@@ -714,14 +714,15 @@ def trigger_areaDet(dets, exposure, stream_name, md, no_dark, jogging=[], frame_
             yield from bps.trigger(det, wait=True)
             yield from bps.create(name=stream_name)
             yield from bps.read(det)
-            yield from bps.read(motors[0])
-            yield from bps.read(motors[1])
-            yield from bps.read(motors[2])
-            # ret = {}
-            # reading = (yield from bps.read(det))
-            # yield from bps.read(Grid_X)
-            # print(f"reading = {reading}")
-            # ret.update(reading)
+
+            try: 
+                yield from bps.read(motors[0])
+                yield from bps.read(motors[1])
+                yield from bps.read(motors[2])
+
+            except IndexError:
+                print(f'\nNo Corresponding motros for the detector.')
+    
             yield from bps.save()
 
             yield from bps.mv(fs, 0)
@@ -792,10 +793,11 @@ def scan_with_dark(dets: list,
             sample index returned in bt.list(). 
             Defaults to 0.
 
-        sample_info (dict, optional): 
-            when sample_ID is not given or found, pass sample_name and composition_string as dict here. 
-            e.g., sample_info = {'sample_name':'CeO2_quartz', 'composition_string':'CeO2'}
-            Defaults to {}.
+        sample_info (list, optional): 
+            when sample_ID is not given or found, pass sample_name and composition_string in a list here.
+            sample_name as the first, composition_string as the second
+            e.g., sample_info = ['CeO2_quartz', 'CeO2']
+            Defaults to [].
 
         md (dict, optional): 
             additional metadata.
@@ -839,7 +841,9 @@ def scan_with_dark(dets: list,
 
     ## Inject sample metadata manually from sample_info
     except (KeyError, IndexError):
-        sample_meta:dict = sample_info
+        sample_meta:dict = {}
+        sample_meta['sample_name'] = sample_info[0]
+        sample_meta['composition_string'] = sample_info[1]
 
     print(f'\n***** sample_name = {sample_meta["sample_name"]} *****')
 
@@ -891,10 +895,11 @@ def scan_pila_3pos(dets: list,
             sample index returned in bt.list(). 
             Defaults to 0.
 
-        sample_info (dict, optional): 
-            when sample_ID is not given or found, pass sample_name and composition_string as dict here. 
-            e.g., sample_info = {'sample_name':'CeO2_quartz', 'composition_string':'CeO2'}
-            Defaults to {}.
+        sample_info (list, optional): 
+            when sample_ID is not given or found, pass sample_name and composition_string in a list here.
+            sample_name as the first, composition_string as the second
+            e.g., sample_info = ['CeO2_quartz', 'CeO2']
+            Defaults to [].
 
         md (dict, optional): 
             additional metadata.
@@ -926,7 +931,9 @@ def scan_pila_3pos(dets: list,
 
     ## Inject sample metadata manually from sample_info
     except (KeyError, IndexError):
-        sample_meta:dict = sample_info
+        sample_meta:dict = {}
+        sample_meta['sample_name'] = sample_info[0]
+        sample_meta['composition_string'] = sample_info[1]
 
     print(f'\n***** sample_name = {sample_meta["sample_name"]} *****')
 
